@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "diario-demo",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "web-server", "--web-port", "8788", "--release","--dart-define=DEMO=true"],
+      "port": 8788
+    }
+  ]
+}
