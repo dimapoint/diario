@@ -115,7 +115,12 @@ class SearchFilters extends ConsumerWidget {
         row([
           for (final m in Mood.all)
             FilterChip(
-              label: Text(m.emoji, style: const TextStyle(fontSize: 16)),
+              // Ancho fijo: el chip se mide antes de que cargue la fuente de
+              // emojis en web y el emoji quedaba recortado.
+              label: SizedBox(
+                width: 22,
+                child: Text(m.emoji, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16)),
+              ),
               tooltip: m.label,
               selected: q.moods.contains(m.value),
               showCheckmark: false,

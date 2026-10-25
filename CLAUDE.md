@@ -21,6 +21,7 @@ flutter build apk --release
 ```
 
 - `DEMO=true` fuerza el modo demo. Sin esa bandera, si `lib/firebase_options.dart` sigue siendo el placeholder (lanza `UnsupportedError`), `main.dart` cae solo a modo demo con un banner. El archivo real se genera con `flutterfire configure --platforms=web,android`.
+- Para levantar la app y manejarla headless (clics, tipeo, capturas) usá el skill `run-diario` (`.claude/skills/run-diario/`): su `driver.mjs` sirve `build/web` y la controla con Playwright.
 - La web usa `usePathUrlStrategy()`: para servir `build/web` y abrir rutas como `/day/2026-10-24` hace falta un servidor con fallback a `index.html`.
 
 ## Arquitectura

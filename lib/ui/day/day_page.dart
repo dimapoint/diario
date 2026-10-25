@@ -46,8 +46,8 @@ class _DayPageState extends ConsumerState<DayPage> {
     _text.addListener(() => _editor.setFreeText(_text.text));
     _highlight.addListener(() => _editor.setHighlight(_highlight.text));
     void flushOnBlur(FocusNode node) => node.addListener(() {
-          if (!node.hasFocus) _editor.flush();
-        });
+      if (!node.hasFocus) _editor.flush();
+    });
     flushOnBlur(_textFocus);
     flushOnBlur(_highlightFocus);
     _lifecycle = AppLifecycleListener(onInactive: () => _editor.flush(), onHide: () => _editor.flush());
@@ -68,7 +68,10 @@ class _DayPageState extends ConsumerState<DayPage> {
     void sync(TextEditingController c, String value) {
       if (c.text == value) return;
       final offset = c.selection.baseOffset.clamp(0, value.length);
-      c.value = TextEditingValue(text: value, selection: TextSelection.collapsed(offset: offset));
+      c.value = TextEditingValue(
+        text: value,
+        selection: TextSelection.collapsed(offset: offset),
+      );
     }
 
     sync(_text, entry.freeText);
@@ -124,10 +127,12 @@ class _DayPageState extends ConsumerState<DayPage> {
   void _showUndo(String message, VoidCallback undo) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(
-        content: Text(message),
-        action: SnackBarAction(label: 'Deshacer', onPressed: undo),
-      ));
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          action: SnackBarAction(label: 'Deshacer', onPressed: undo),
+        ),
+      );
   }
 
   @override
@@ -144,25 +149,30 @@ class _DayPageState extends ConsumerState<DayPage> {
         const SingleActivator(LogicalKeyboardKey.arrowLeft, alt: true): () => _goToDay(shiftDayId(_id, -1)),
         const SingleActivator(LogicalKeyboardKey.arrowRight, alt: true): () => _goToDay(shiftDayId(_id, 1)),
       },
-      child: GestureDetector(
-        // Swipe horizontal para cambiar de día en el celular.
-        onHorizontalDragEnd: wide
-            ? null
-            : (d) {
-                final v = d.primaryVelocity ?? 0;
-                if (v > 500) _goToDay(shiftDayId(_id, -1));
-                if (v < -500 && canGoNext) _goToDay(shiftDayId(_id, 1));
-              },
-        child: _DayForm(
-          dayId: _id,
-          state: state,
-          wide: wide,
-          text: _text,
-          highlight: _highlight,
-          textFocus: _textFocus,
-          highlightFocus: _highlightFocus,
-          onFocusMode: _openFocusMode,
-          onUndo: _showUndo,
+      // Sin un nodo con foco dentro del día, los atajos no reciben las
+      // teclas hasta que tocás un campo.
+      child: Focus(
+        autofocus: true,
+        child: GestureDetector(
+          // Swipe horizontal para cambiar de día en el celular.
+          onHorizontalDragEnd: wide
+              ? null
+              : (d) {
+                  final v = d.primaryVelocity ?? 0;
+                  if (v > 500) _goToDay(shiftDayId(_id, -1));
+                  if (v < -500 && canGoNext) _goToDay(shiftDayId(_id, 1));
+                },
+          child: _DayForm(
+            dayId: _id,
+            state: state,
+            wide: wide,
+            text: _text,
+            highlight: _highlight,
+            textFocus: _textFocus,
+            highlightFocus: _highlightFocus,
+            onFocusMode: _openFocusMode,
+            onUndo: _showUndo,
+          ),
         ),
       ),
     );
@@ -201,7 +211,10 @@ class _DayPageState extends ConsumerState<DayPage> {
             },
             itemBuilder: (_) => [
               if (_id != todayId())
-                const PopupMenuItem(value: 'today', child: ListTile(leading: Icon(Icons.today), title: Text('Ir a hoy'))),
+                const PopupMenuItem(
+                  value: 'today',
+                  child: ListTile(leading: Icon(Icons.today), title: Text('Ir a hoy')),
+                ),
               const PopupMenuItem(
                 value: 'focus',
                 child: ListTile(leading: Icon(Icons.open_in_full), title: Text('Modo foco')),
@@ -346,10 +359,7 @@ class _DayForm extends ConsumerWidget {
     final words = RegExp(r'\S+').allMatches(entry.freeText).length;
 
     return ListView(
-      padding: EdgeInsets.symmetric(
-        horizontal: wide ? 32 : 16,
-        vertical: 8,
-      ).copyWith(bottom: 48),
+      padding: EdgeInsets.symmetric(horizontal: wide ? 32 : 16, vertical: 8).copyWith(bottom: 48),
       children: [
         Center(
           child: ConstrainedBox(
@@ -470,10 +480,7 @@ class _ConflictCard extends ConsumerWidget {
             onPressed: () => Navigator.pop(context, ConflictChoice.keepMine),
             child: const Text('Quedarme con la mía'),
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, ConflictChoice.combine),
-            child: const Text('Combinar'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, ConflictChoice.combine), child: const Text('Combinar')),
           FilledButton(
             onPressed: () => Navigator.pop(context, ConflictChoice.useTheirs),
             child: const Text('Usar esta'),
