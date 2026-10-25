@@ -32,6 +32,7 @@ Capas al estilo de la guía de arquitectura de Flutter (UI → ViewModel → Rep
 - **Datos** (`lib/data/`):
   - `EntryRepository` es la interfaz, con dos implementaciones: `FirestoreEntryRepository` (`users/{uid}/entries/{yyyy-MM-dd}`) e `InMemoryEntryRepository` (tests y demo).
   - Las escrituras son `saveFields(dayId, camposCambiados)`, un merge por campo con last-write-wins por campo. No se espera el `Future` porque offline no completa. El estado de sync sale de `DaySnapshot.hasPendingWrites`.
+  - El backup (`export.dart`, desde Ajustes) usa `DiaryEntry.toJson()`/`fromJson` con `DiaryEntry.schemaVersion`: si cambian los campos, hay que subir esa versión.
   - La búsqueda (`text_search.dart`) y las sugerencias de chips (`suggestions.dart`) se calculan en el cliente sobre todas las entradas en memoria. `normalizeForSearch` conserva el largo del string porque sus índices se usan para resaltar en el texto original.
 - **Servicios**: `auth/auth_service.dart` tiene `FirebaseAuthService` (popup en web, `google_sign_in` 7 con Credential Manager en Android) y `DemoAuthService`.
 - **Inyección** (`lib/providers.dart` + `lib/main.dart`): los providers declaran valores por defecto y `main.dart` los sobreescribe según el modo (demo o Firebase). `entryRepositoryProvider` depende del `uid` de `currentUserProvider`. Los tests deben sobreescribir los mismos providers (`entryRepositoryProvider`, `authServiceProvider`, `appModeProvider`).
